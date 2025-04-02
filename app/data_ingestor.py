@@ -5,8 +5,13 @@ import pandas as pd
 class DataIngestor:
     def __init__(self, csv_path: str):
         # TODO: Read csv from csv_path
-        self.csv_path = csv_path
-        self.df = pd.read_csv(self.csv_path)
+
+        # Verific daca filepath-ul este unul valid
+        if not os.path.isfile(csv_path):
+            raise ValueError(f"File {csv_path} does not exist.")
+        
+        # Citesc fisierul csv folosind pandas
+        self.df = pd.read_csv(csv_path)
         
 
         self.questions_best_is_min = [
