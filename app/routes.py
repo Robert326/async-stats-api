@@ -3,7 +3,7 @@ from flask import request, jsonify
 
 import os
 import json
-from ManagerJobs import ManagerJoburi
+from app.ManagerJobs import ManagerJoburi
 
 # Example endpoint definition
 @webserver.route('/api/post_endpoint', methods=['POST'])
@@ -35,9 +35,31 @@ def get_response(job_id):
     #        'status': 'done',
     #        'data': res
     #    })
-
+    
     # If not, return running status
-    return jsonify({'status': 'NotImplemented'})
+    status = ManagerJoburi.getStatus(job_id)
+
+    if status is None:
+        return jsonify({
+            'status': 'error',
+            'reason': 'Invalid job_id'
+        }), 404
+    elif status == "done":
+        result = ManagerJoburi.getResult(job_id)
+        if result is None:
+            return jsonify({
+                'status': 'error',
+                'reason': 'Result not found'
+            }), 404
+        else:
+            return jsonify({
+                'status': 'done',
+                'data': result
+            }), 200
+    else:
+        return jsonify({
+            'status': 'running',
+        }), 200
 
 @webserver.route('/api/states_mean', methods=['POST'])
 def states_mean_request():
@@ -50,7 +72,10 @@ def states_mean_request():
     # Increment job_id counter
     # Return associated job_id
 
-    return jsonify({"status": "NotImplemented"})
+    
+    id = ManagerJoburi.addJob("running", "states_mean", data)
+    return jsonify({"status": "running", "job_id": id})
+
 
 @webserver.route('/api/state_mean', methods=['POST'])
 def state_mean_request():
@@ -60,7 +85,9 @@ def state_mean_request():
     # Increment job_id counter
     # Return associated job_id
 
-    return jsonify({"status": "NotImplemented"})
+    data = request.json
+    id = ManagerJoburi.addJob("running", "state_mean", data)
+    return jsonify({"status": "running", "job_id": id})
 
 
 @webserver.route('/api/best5', methods=['POST'])
@@ -70,8 +97,9 @@ def best5_request():
     # Register job. Don't wait for task to finish
     # Increment job_id counter
     # Return associated job_id
-
-    return jsonify({"status": "NotImplemented"})
+    data = request.json
+    id = ManagerJoburi.addJob("running", "best5", data)
+    return jsonify({"status": "running", "job_id": id})
 
 @webserver.route('/api/worst5', methods=['POST'])
 def worst5_request():
@@ -80,8 +108,9 @@ def worst5_request():
     # Register job. Don't wait for task to finish
     # Increment job_id counter
     # Return associated job_id
-
-    return jsonify({"status": "NotImplemented"})
+    data = request.json
+    id = ManagerJoburi.addJob("running", "worst5", data)
+    return jsonify({"status": "running", "job_id": id})
 
 @webserver.route('/api/global_mean', methods=['POST'])
 def global_mean_request():
@@ -90,8 +119,9 @@ def global_mean_request():
     # Register job. Don't wait for task to finish
     # Increment job_id counter
     # Return associated job_id
-
-    return jsonify({"status": "NotImplemented"})
+    data = request.json
+    id = ManagerJoburi.addJob("running", "global_mean", data)
+    return jsonify({"status": "running", "job_id": id})
 
 @webserver.route('/api/diff_from_mean', methods=['POST'])
 def diff_from_mean_request():
@@ -100,8 +130,9 @@ def diff_from_mean_request():
     # Register job. Don't wait for task to finish
     # Increment job_id counter
     # Return associated job_id
-
-    return jsonify({"status": "NotImplemented"})
+    data = request.json
+    id = ManagerJoburi.addJob("running", "diff_from_mean", data)
+    return jsonify({"status": "running", "job_id": id})
 
 @webserver.route('/api/state_diff_from_mean', methods=['POST'])
 def state_diff_from_mean_request():
@@ -110,8 +141,9 @@ def state_diff_from_mean_request():
     # Register job. Don't wait for task to finish
     # Increment job_id counter
     # Return associated job_id
-
-    return jsonify({"status": "NotImplemented"})
+    data = request.json
+    id = ManagerJoburi.addJob("running", "state_diff_from_mean", data)
+    return jsonify({"status": "running", "job_id": id})
 
 @webserver.route('/api/mean_by_category', methods=['POST'])
 def mean_by_category_request():
@@ -120,8 +152,9 @@ def mean_by_category_request():
     # Register job. Don't wait for task to finish
     # Increment job_id counter
     # Return associated job_id
-
-    return jsonify({"status": "NotImplemented"})
+    data = request.json
+    id = ManagerJoburi.addJob("running", "mean_by_category", data)
+    return jsonify({"status": "running", "job_id": id})
 
 @webserver.route('/api/state_mean_by_category', methods=['POST'])
 def state_mean_by_category_request():
@@ -130,8 +163,10 @@ def state_mean_by_category_request():
     # Register job. Don't wait for task to finish
     # Increment job_id counter
     # Return associated job_id
+    data = request.json
+    id = ManagerJoburi.addJob("running", "state_mean_by_category", data)
+    return jsonify({"status": "running", "job_id": id})
 
-    return jsonify({"status": "NotImplemented"})
 
 # You can check localhost in your browser to see what this displays
 @webserver.route('/')

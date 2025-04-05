@@ -4,29 +4,40 @@ from queue import Queue
 
 class ManagerJoburi:
     def __init__(self):
-        self.job_status = {} # Stochez statusul joburilor
+        self.job_status = {} # Stochez statusul joburilor si ce joburi sunt (ex: states_mean)
         self.job_queue = Queue() # Coada pt joburi
         self.lock = threading.Lock() # Lock pt a nu avea conflicte la accesul datelor
         self.job_counter = 0 # un contor pt a asigna id-uri unice joburilor
     
-    def addJob(self, status, data):
+    def addJob(self, status, job, data):
         with self.lock: # blochez accesul doar pentru un singur thread
             self.job_counter += 1
             job_id = self.job_counter
-            self.job_status[job_id] = status
-        
+            self.job_status[job_id]["status"] = status
+            self.job_status[job_id]["jobType"] = job
+
         # nu mai e necesar lock-ul pentru ca mai multe threaduri pot adauga joburi deodata
-        job = {id: job_id, status: status, data: data}
+        job = {id: job_id, status: status,jobType:job, data: data}
         self.job_queue.put(job) 
         return job_id
     
     def updateStatus(self, job_id, status):
         with self.lock:
-            self.job_status[job_id] = status
-
+            self.job_status[job_id]["status"] = status
+    
     def getStatus(self, job_id):
         with self.lock:
             return self.job_status.get(job_id, None)
+    
+    def getResult(self, job_id):
+        if self.getStatus(job_id) == "done":
+            try:
+                with open(f"results/{job_id}.json", "r") as f:
+                    result = json.load(f)
+                return result
+            except FileNotFoundError:
+                return None
+        return None
 
 jobManager = ManagerJoburi() # Creez o instanta a managerului de joburi
 
