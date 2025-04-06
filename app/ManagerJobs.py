@@ -13,11 +13,18 @@ class ManagerJoburi:
         with self.lock: # blochez accesul doar pentru un singur thread
             self.job_counter += 1
             job_id = self.job_counter
-            self.job_status[job_id]["status"] = status
-            self.job_status[job_id]["jobType"] = job
+            self.job_status[job_id] = {
+                "status": status, 
+                "jobType": job
+            }
 
         # nu mai e necesar lock-ul pentru ca mai multe threaduri pot adauga joburi deodata
-        job = {id: job_id, status: status,jobType:job, data: data}
+        job = {
+            "id": job_id,
+            "status": status,
+            "jobType": job,
+            "data": data
+        }
         self.job_queue.put(job) 
         return job_id
     
@@ -27,7 +34,11 @@ class ManagerJoburi:
     
     def getStatus(self, job_id):
         with self.lock:
-            return self.job_status.get(job_id, None)
+            if job_id in self.job_status:
+                return self.job_status[job_id]["status"]
+            else:
+                return None
+        
     
     def getResult(self, job_id):
         if self.getStatus(job_id) == "done":
