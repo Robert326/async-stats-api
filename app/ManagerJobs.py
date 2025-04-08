@@ -41,14 +41,14 @@ class ManagerJoburi:
         
     
     def getResult(self, job_id):
-        if self.getStatus(job_id) == "done":
+        if self.getStatus(int(job_id)) == "done":
             try:
                 with open(f"results/{job_id}.json", "r") as f:
                     result = json.load(f)
+                    print(f"Result for job {job_id} is {result}")
                 return result
             except FileNotFoundError:
                 return None
-        return None
 
 jobManager = ManagerJoburi() # Creez o instanta a managerului de joburi
 

@@ -37,29 +37,35 @@ def get_response(job_id):
     #    })
     
     # If not, return running status
-    status = jobManager.getStatus(job_id)
-
-    if status is None:
+    job_status = jobManager.getStatus(int(job_id))
+    if job_status is None:
+        # Job does not exist
         return jsonify({
             'status': 'error',
-            'reason': 'Invalid job_id'
-        }), 404
-    elif status == "done":
-        result = jobManager.getResult(job_id)
-        if result is None:
-            return jsonify({
-                'status': 'error',
-                'reason': 'Result not found'
-            }), 404
-        else:
-            return jsonify({
-                'status': 'done',
-                'data': result
-            }), 200
-    else:
+            'message': f"Job ID {job_id} not found"
+        }), 404 # Return a 404 if the job ID is not found
+    
+    if job_status == 'done':
+        # Job is completed, return the result
+        result_data = jobManager.getResult(int(job_id))
+        return jsonify({
+            'status': 'done',
+            'data': result_data
+        })
+    
+    if job_status == 'running':
+        # Job is still running, return the running status
         return jsonify({
             'status': 'running',
-        }), 200
+            'message': 'Job is still processing'
+        })
+
+    # If we reach here, something went wrong with job status (should not happen unless there's an issue)
+    return jsonify({
+        'status': 'error',
+        'message': f"Unknown job status for job {job_id}"
+    }), 500
+
 
 @webserver.route('/api/states_mean', methods=['POST'])
 def states_mean_request():
@@ -74,7 +80,7 @@ def states_mean_request():
 
     
     id = jobManager.addJob("running", "states_mean_request", data)
-    return jsonify({"status": "running", "job_id": id}), 200
+    return jsonify({"job_id": id}), 200
 
 
 @webserver.route('/api/state_mean', methods=['POST'])

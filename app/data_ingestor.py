@@ -4,7 +4,6 @@ import pandas as pd
 
 class DataIngestor:
     def __init__(self, csv_path: str):
-        # TODO: Read csv from csv_path
 
         # Verific daca filepath-ul este unul valid
         if not os.path.isfile(csv_path):
@@ -13,6 +12,11 @@ class DataIngestor:
         # Citesc fisierul csv folosind pandas
         self.df = pd.read_csv(csv_path)
         
+        self.df.rename(columns={
+            "YearStart": "Year",
+            "LocationDesc": "State",
+            "Data_Value": "Value",
+        }, inplace=True)
 
         self.questions_best_is_min = [
             'Percent of adults aged 18 years and older who have an overweight classification',
@@ -28,3 +32,4 @@ class DataIngestor:
             'Percent of adults who achieve at least 300 minutes a week of moderate-intensity aerobic physical activity or 150 minutes a week of vigorous-intensity aerobic activity (or an equivalent combination)',
             'Percent of adults who engage in muscle-strengthening activities on 2 or more days a week',
         ]
+    
