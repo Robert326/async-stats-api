@@ -1,7 +1,5 @@
 import pandas as pd
 import numpy as np
-import json
-import os
 
 def states_mean_request(data, df):
     """
@@ -56,7 +54,7 @@ def state_mean_request(data, df):
 
     return result_dict
 
-def best5_request(data, df, questions_best_is_min, questions_best_is_max):
+def best5_request(data, df, questions_best_is_min):
     """
     Calculate the mean of the given questions for each state and return the top 
     5 states.
@@ -86,7 +84,7 @@ def best5_request(data, df, questions_best_is_min, questions_best_is_max):
 
     return result_dict
 
-def worst5_request(data, df, questions_best_is_min, questions_best_is_max):
+def worst5_request(data, df, questions_best_is_min):
     question = data["question"]
     filtered_df = df[(df["Question"] == question) &
                         (df["Year"] >= 2011) & (df["YearEnd"] <= 2022)]
@@ -115,22 +113,25 @@ def global_mean_request(data, df):
 
 def diff_from_mean_request(data, df):
     question = data["question"]
-    filtered_df = df[(df["Question"] == question) &
-                     (df["Year"] >= 2011) & (df["YearEnd"] <= 2022)]
-    
-    # Calculez media pentru fiecare stat
-    state_means = filtered_df.groupby("State")["Value"].mean().reset_index()
-    state_means.columns = ["State", "Mean"]
 
-    # Calculez global_state_mean ca fiind media mediei per stat
-    global_state_mean = state_means["Mean"].mean()
-    state_means["DiffFromGlobal"] = global_state_mean - state_means["Mean"]
+    # Obținem lista de state unice din datele filtrate
+    filtered_df = df[df["Question"] == question]
+    states = filtered_df["State"].unique()
 
-    state_means = state_means.sort_values(by="DiffFromGlobal", ascending=False)
-    
-    result_dict = dict(zip(state_means["State"], state_means["DiffFromGlobal"]))
-    
-    return result_dict
+    # Inițializăm un dicționar pentru a stoca diferențele
+    diffs = {}
+
+    # Parcurgem fiecare stat și calculăm diferența folosind state_diff_from_mean_request
+    for state in states:
+        state_data = {'question': question, 'state': state}
+        diff = state_diff_from_mean_request(state_data, df)
+        diffs.update(diff)  # Adăugăm diferența în dicționar
+
+    sorted_diffs = dict(sorted(diffs.items(), key=lambda item: item[1], reverse=True))
+
+    return sorted_diffs
+
+
 
 def state_diff_from_mean_request(data, df):
     question = data["question"]
@@ -141,7 +142,6 @@ def state_diff_from_mean_request(data, df):
     global_mean = filtered_df["Value"].mean()
     state_mean = filtered_df[filtered_df["State"] == state]["Value"].mean()
 
-    
     return {
         state: global_mean - state_mean
     }
@@ -150,8 +150,9 @@ def mean_by_category_request(data, df):
     question = data["question"]
     filtered_df = df[(df["Question"] == question) &
                      (df["Year"] >= 2011) & (df["YearEnd"] <= 2022)]
-    
-    grouped = filtered_df.groupby(["State", "StratificationCategory1", "Stratification1"])["Value"].mean().reset_index()
+
+    grouped = filtered_df.groupby(["State", "StratificationCategory1",
+                                   "Stratification1"])["Value"].mean().reset_index()
     grouped.columns = ["State", "Category", "Segment", "Mean"]
 
     result_dict = {}
@@ -170,7 +171,8 @@ def state_mean_by_category_request(data, df):
         (df["State"] == state)
     ]
 
-    grouped = filtered_df.groupby(["StratificationCategory1", "Stratification1"])["Value"].mean().reset_index()
+    grouped = filtered_df.groupby(["StratificationCategory1",
+                                   "Stratification1"])["Value"].mean().reset_index()
     grouped.columns = ["Category", "Segment", "Mean"]
 
     result_dict = {}

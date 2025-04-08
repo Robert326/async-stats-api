@@ -1,5 +1,4 @@
 import os
-import json
 import pandas as pd
 
 class DataIngestor:
@@ -8,10 +7,10 @@ class DataIngestor:
         # Verific daca filepath-ul este unul valid
         if not os.path.isfile(csv_path):
             raise ValueError(f"File {csv_path} does not exist.")
-        
+
         # Citesc fisierul csv folosind pandas
         self.df = pd.read_csv(csv_path)
-        
+
         self.df.rename(columns={
             "YearStart": "Year",
             "LocationDesc": "State",
@@ -32,4 +31,3 @@ class DataIngestor:
             'Percent of adults who achieve at least 300 minutes a week of moderate-intensity aerobic physical activity or 150 minutes a week of vigorous-intensity aerobic activity (or an equivalent combination)',
             'Percent of adults who engage in muscle-strengthening activities on 2 or more days a week',
         ]
-    

@@ -1,4 +1,3 @@
-from queue import Queue
 from threading import Thread, Event
 import time
 from app.data_ingestor import DataIngestor
@@ -28,9 +27,9 @@ class ThreadPool:
 
         if "TP_NUM_OF_THREADS" in os.environ:
             num_threads = int(os.environ["TP_NUM_OF_THREADS"])
-        else: 
+        else:
             num_threads = os.cpu_count()
-    
+
         for _ in range(num_threads):
             thread = TaskRunner(self.data_ingestor)
             thread.start()
@@ -38,15 +37,14 @@ class ThreadPool:
 
 class TaskRunner(Thread):
     def __init__(self, data_ingestor):
-        # TODO: init necessary data structures
         super().__init__()
-        self.data_ingestor = data_ingestor 
-    
+        self.data_ingestor = data_ingestor
+
     def save_result_to_disk(self, job_id, result):
         result_dir = "results"
         if not os.path.exists(result_dir):
             os.makedirs(result_dir)
-        
+
         result_path = os.path.join(result_dir, f"{job_id}.json")
 
         with open(result_path, "w") as f:
@@ -54,10 +52,6 @@ class TaskRunner(Thread):
 
     def run(self):
         while True:
-            # TODO
-            # Get pending job
-            # Execute the job and save the result to disk
-            # Repeat until graceful_shutdown
             job = jobManager.job_queue.get()
             job_type = job["jobType"]
             data = job["data"]
@@ -70,9 +64,9 @@ class TaskRunner(Thread):
                     case "state_mean":
                         result = state_mean_request(data, df)
                     case "best5":
-                        result = best5_request(data, df, self.data_ingestor.questions_best_is_min, self.data_ingestor.questions_best_is_max)
+                        result = best5_request(data, df, self.data_ingestor.questions_best_is_min)
                     case "worst5":
-                        result = worst5_request(data, df, self.data_ingestor.questions_best_is_min, self.data_ingestor.questions_best_is_max)
+                        result = worst5_request(data, df, self.data_ingestor.questions_best_is_min)
                     case "global_mean":
                         result = global_mean_request(data, df)
                     case "diff_from_mean":
