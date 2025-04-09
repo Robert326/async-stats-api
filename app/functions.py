@@ -1,5 +1,3 @@
-import pandas as pd
-import numpy as np
 
 def states_mean_request(data, df):
     """
@@ -11,12 +9,12 @@ def states_mean_request(data, df):
     """
 
     question = data["question"]
-    
+
     # filter by questions and years
-    filtered_df = df[(df["Question"] == question) & 
-                     (df["Year"] >= 2011) & 
+    filtered_df = df[(df["Question"] == question) &
+                     (df["Year"] >= 2011) &
                      (df["YearEnd"] <= 2022)]
-    
+
     # group by state and calculate mean
     result = filtered_df.groupby("State")["Value"].mean().reset_index()
     result.columns = ["State", "Mean"]
@@ -39,13 +37,13 @@ def state_mean_request(data, df):
 
     question = data["question"]
     state = data["state"]
-    
+
     # filter by questions and years
-    filtered_df = df[(df["Question"] == question) & 
-                     (df["State"] == state) & 
-                     (df["Year"] >= 2011) & 
+    filtered_df = df[(df["Question"] == question) &
+                     (df["State"] == state) &
+                     (df["Year"] >= 2011) &
                      (df["YearEnd"] <= 2022)]
-    
+
     # group by state and calculate mean
     result = filtered_df.groupby("State")["Value"].mean().reset_index()
     result.columns = ["State", "Mean"]
@@ -65,11 +63,11 @@ def best5_request(data, df, questions_best_is_min):
     """
 
     question = data["question"]
-    
+
     filtered_df = df[(df["Question"] == question) &
-                     (df["Year"] >= 2011) & 
+                     (df["Year"] >= 2011) &
                      (df["YearEnd"] <= 2022)]
-    
+
     result = filtered_df.groupby("State")["Value"].mean().reset_index()
     result.columns = ["State", "Mean"]
 
@@ -85,6 +83,10 @@ def best5_request(data, df, questions_best_is_min):
     return result_dict
 
 def worst5_request(data, df, questions_best_is_min):
+    """
+    Calculate the mean of the given questions for each state and return the
+    bottom 5 states.
+    """
     question = data["question"]
     filtered_df = df[(df["Question"] == question) &
                         (df["Year"] >= 2011) & (df["YearEnd"] <= 2022)]
@@ -104,6 +106,9 @@ def worst5_request(data, df, questions_best_is_min):
     return result_dict
 
 def global_mean_request(data, df):
+    """
+    Calculate the global mean of the given questions.
+    """
     question = data["question"]
     filtered_df = df[(df["Question"] == question) &
                      (df["Year"] >= 2011) & (df["YearEnd"] <= 2022)]
@@ -112,16 +117,14 @@ def global_mean_request(data, df):
     return {"global_mean": mean_value}
 
 def diff_from_mean_request(data, df):
+    """
+    Calculate the difference from the global mean for each state.
+    """
     question = data["question"]
-
-    # Obținem lista de state unice din datele filtrate
     filtered_df = df[df["Question"] == question]
     states = filtered_df["State"].unique()
-
-    # Inițializăm un dicționar pentru a stoca diferențele
     diffs = {}
 
-    # Parcurgem fiecare stat și calculăm diferența folosind state_diff_from_mean_request
     for state in states:
         state_data = {'question': question, 'state': state}
         diff = state_diff_from_mean_request(state_data, df)
@@ -134,6 +137,9 @@ def diff_from_mean_request(data, df):
 
 
 def state_diff_from_mean_request(data, df):
+    """
+    Calculate the difference from the global mean for a specific state.
+    """
     question = data["question"]
     state = data["state"]
     filtered_df = df[(df["Question"] == question) &
@@ -147,6 +153,9 @@ def state_diff_from_mean_request(data, df):
     }
 
 def mean_by_category_request(data, df):
+    """
+    Calculate the mean of the given questions for each state and category.
+    """
     question = data["question"]
     filtered_df = df[(df["Question"] == question) &
                      (df["Year"] >= 2011) & (df["YearEnd"] <= 2022)]
@@ -163,6 +172,9 @@ def mean_by_category_request(data, df):
     return result_dict
 
 def state_mean_by_category_request(data, df):
+    """
+    Calculate the mean of the given questions for a specific state and category.
+    """
     question = data["question"]
     state = data["state"]
     filtered_df = df[
