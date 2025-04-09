@@ -11,9 +11,14 @@ Am implementat un ThreadPool, care lansează un număr de threaduri, fiecare pre
 taskuri dintr-o coadă partajată. Astfel am obținut o executie unde mai multe cereri pot fi procesate
 simultan, fără a recrea threaduri pentru fiecare task. Am decis să îmi mai fac o clasă job manager 
 pentru ca eu personal am simțit că e mai natural să folosesc ceva de genul pentru a putea sa fac 
-diverse lucruri cu joburile. În task_runner doar am match-uit joburile din coadă cu numele lor,
-iar după aceea le-am procesat. Funcțiile le-am păstrat într-un fișier separat pentru a modulariza
+diverse lucruri cu joburile. Funcțiile le-am păstrat într-un fișier separat pentru a modulariza
 codul mai bine.
+În metoda run din clasa TaskRunner iau datele necesare pentru prelucrarea requesturilor și fac 
+match pe numele fiecăruia, nume pus când am primit requestul și l-am pus în coada de joburi 
+care trebuie rezolvate.
+Cam toate endpoint-urile se folosesc de functii care calculează ce se cere, doar cele care nu
+cer calcule nu fac asta.
+Rezultatele Job-urilor sunt stocate pe disc în results.
 
 Personal consider că tema este foarte utilă deoarece unește mai multe arii din programare și
 este un exercițiu foarte bun pentru a înțelege cum ar putea funcționa un backend minimal.
@@ -34,8 +39,6 @@ am stat destul de mult pe debug pe chestia asta. De asemenea și configurarea mo
 având în vedere că a fost prima oară când am făcut asta.
 Pe parcurs după cum am spus și mai sus am înțeles să fac unittest-uri (chiar dacă am făcut doar 1), am descoperit și cum pot să
 prelucrez așa multe date cu ajutorul pandas și desigur flask.
-
-
 
 Resurse utilizate
 -
