@@ -11,6 +11,7 @@ class DataIngestor:
         # Citesc fisierul csv folosind pandas
         self.df = pd.read_csv(csv_path)
 
+        # redenumesc coloanele pentru a fi mai usor de inteles/accesat
         self.df.rename(columns={
             "YearStart": "Year",
             "LocationDesc": "State",

@@ -1,3 +1,10 @@
+"""
+    Managerul de joburi
+    In aceasta clasa se vor adauga joburi, se va face update la statusul joburilor
+    si se vor returna rezultatele joburilor.
+"""
+
+
 import json
 import threading
 from queue import Queue
@@ -59,12 +66,12 @@ class ManagerJoburi:
         """
         if self.get_status(int(job_id)) == "done":
             try:
-                with open(f"results/{job_id}.json", "r") as f:
+                with open(f"results/{job_id}.json", "r", encoding="utf-8") as f:
                     result = json.load(f)
-                    print(f"Result for job {job_id} is {result}")
                 return result
             except FileNotFoundError:
                 return None
+        return None
 
     def get_num_jobs(self):
         """

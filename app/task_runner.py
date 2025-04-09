@@ -1,3 +1,8 @@
+"""
+Modulul TaskRunner
+Contine implementarea unui ThreadPool care va rula TaskRunner
+si va procesa joburile din coada.
+"""
 from threading import Thread, Event
 import json
 from queue import Empty

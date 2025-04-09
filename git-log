@@ -1,0 +1,65 @@
+commit a6b527856d30fa68ba16ba53e7ef9dc4b3c0fe67
+Author: Robert326 <robert_bolfa@yahoo.com>
+Date:   Wed Apr 9 17:21:53 2025 +0300
+
+    solved 100/100 + other routes num_jobs, jobs, graceful_shutdown
+
+commit 9a0eb3e33f4f0681544d78eb20f82a67b033b02b
+Author: Robert326 <robert_bolfa@yahoo.com>
+Date:   Tue Apr 8 16:25:45 2025 +0300
+
+    functions done, other stuff left
+
+commit f59c520860ef20320021788e7fe36e00c472985c
+Author: Robert326 <robert_bolfa@yahoo.com>
+Date:   Tue Apr 8 14:36:37 2025 +0300
+
+    diff_from_mean problem
+
+commit 644b9fd39e199f03d513ba84b1f31fb5e64e32cb
+Author: Robert326 <robert_bolfa@yahoo.com>
+Date:   Mon Apr 7 14:55:43 2025 +0300
+
+    bluescreen 1 min ago
+
+commit 466bc500ebafc3578d6ebe372d8cb33b0b29cb1b
+Author: Robert326 <robert_bolfa@yahoo.com>
+Date:   Sun Apr 6 22:17:22 2025 +0300
+
+    solved issues
+
+commit 48be048b132f5f4ae4c22819e0839b4e92b9469e
+Author: Robert326 <robert_bolfa@yahoo.com>
+Date:   Sat Apr 5 19:59:21 2025 +0300
+
+    nu merge nimic
+
+commit a5ce3487b31e21d00b86c779c63f12c082457250
+Author: Robert326 <robert_bolfa@yahoo.com>
+Date:   Wed Apr 2 22:23:05 2025 +0300
+
+    another class for managing the jobs
+
+commit 6ef7984d1c5b4cf2ca716ab0bb4b3cf21b15c8e2
+Author: Robert326 <robert_bolfa@yahoo.com>
+Date:   Wed Apr 2 21:02:40 2025 +0300
+
+    Clasa pt a putea sa manage-uiesc job-urile mai usor
+
+commit 30d2d3ee7dde9f565de76ee2eada46ed75ecd006
+Author: Robert326 <robert_bolfa@yahoo.com>
+Date:   Wed Apr 2 20:16:20 2025 +0300
+
+    deleted .Identifier
+
+commit d768d8e9afbe3aa70c9b70b02865cc33dd5b60fe
+Author: Robert326 <robert_bolfa@yahoo.com>
+Date:   Wed Apr 2 20:10:38 2025 +0300
+
+    added git log and deleted .Identifier files
+
+commit bd21d26616b7bbe2447c23ccbe16769768211e15
+Author: Robert326 <robert_bolfa@yahoo.com>
+Date:   Wed Apr 2 16:40:37 2025 +0300
+
+    created repo
