@@ -1,49 +1,68 @@
-Nume: Bolfă Robert-Ion
-Grupă: 333 CB
+# Le Stats Sportif
 
-# Tema <1>
+![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)
+![Flask](https://img.shields.io/badge/Flask-000000?logo=flask&logoColor=white)
+![Pandas](https://img.shields.io/badge/Pandas-150458?logo=pandas&logoColor=white)
 
-Organizare
--
-1. Explicație pentru soluția aleasă:
+A multi-threaded REST server that answers statistical questions about a U.S. public-health dataset (nutrition, physical activity and obesity), **asynchronously**: every request becomes a job, a pool of worker threads computes it, and the client polls for the result.
 
-Am implementat un ThreadPool, care lansează un număr de threaduri, fiecare preluând și procesând
-taskuri dintr-o coadă partajată. Astfel am obținut o executie unde mai multe cereri pot fi procesate
-simultan, fără a recrea threaduri pentru fiecare task. Am decis să îmi mai fac o clasă job manager 
-pentru ca eu personal am simțit că e mai natural să folosesc ceva de genul pentru a putea sa fac 
-diverse lucruri cu joburile. Funcțiile le-am păstrat într-un fișier separat pentru a modulariza
-codul mai bine.
-În metoda run din clasa TaskRunner iau datele necesare pentru prelucrarea requesturilor și fac 
-match pe numele fiecăruia, nume pus când am primit requestul și l-am pus în coada de joburi 
-care trebuie rezolvate.
-Cam toate endpoint-urile se folosesc de functii care calculează ce se cere, doar cele care nu
-cer calcule nu fac asta.
-Rezultatele Job-urilor sunt stocate pe disc în results.
+Built for the Computer Systems Architecture course at UPB (Apr 2025).
 
-Personal consider că tema este foarte utilă deoarece unește mai multe arii din programare și
-este un exercițiu foarte bun pentru a înțelege cum ar putea funcționa un backend minimal.
+## How it works
 
-Legat de implementare, cred că este destul de echilibrată. ThreadPool-ul este eficient deoarece
-folosește threaduri persistente și nu recreează resurse. Probabil că există și posibilități de 
-îmbunătățire.
+```mermaid
+sequenceDiagram
+    actor Client
+    participant API as Flask routes
+    participant Q as Job queue
+    participant W as Worker threads (pool)
+    participant D as results/ on disk
 
-Implementare
--
+    Client->>API: POST /api/states_mean {question}
+    API->>Q: enqueue job
+    API-->>Client: {job_id}
+    W->>Q: take next job
+    W->>W: compute with Pandas
+    W->>D: write job_id.json
+    Client->>API: GET /api/get_results/job_id
+    API->>D: read result
+    API-->>Client: running / done + data
+```
 
-Nu am implementat Unittests, am făcut doar un test.
-Funcționalități extra nu am facut.
-Funcționalitățile care nu sunt verificate sunt 3 api-uri /api/num_jobs, /api/jobs și /api/graceful_shutdown
-A fost destul de dificil să îmi dau seama cum aș aborda setul de date. Nu știam de existența pandas, mi-a fost recomandat
-de un coleg să folosesc asta, de asemenea când apelam anumite funcții în loc să îmi parseze int , îmi parsa string și 
-am stat destul de mult pe debug pe chestia asta. De asemenea și configurarea modulului de logging mi s-a părut puțin complicată
-având în vedere că a fost prima oară când am făcut asta.
-Pe parcurs după cum am spus și mai sus am înțeles să fac unittest-uri (chiar dacă am făcut doar 1), am descoperit și cum pot să
-prelucrez așa multe date cu ajutorul pandas și desigur flask.
+- A **custom thread pool**: threads are started once and reused, each one pulling jobs from a shared queue, instead of creating a thread per request.
+- The pool size comes from `TP_NUM_OF_THREADS`, or the number of CPU cores.
+- Results are persisted to disk, so they survive after the worker that computed them moves on.
+- **Graceful shutdown**: `/api/graceful_shutdown` stops accepting new jobs and lets the queue drain.
+- Requests and errors are logged with Python's `logging` module.
 
-Resurse utilizate
--
-w3school, laburi ASC, stackoverflow, youtube, documentația oficială python
+## API
 
-Git
--
-1. https://github.com/Robert326/Tema1-Le_Stats_Sportif
+| Endpoint | What it returns |
+| --- | --- |
+| `POST /api/states_mean` | Mean value per state for a question, sorted |
+| `POST /api/state_mean` | Mean for one state |
+| `POST /api/best5`, `/api/worst5` | Top / bottom 5 states |
+| `POST /api/global_mean` | Mean over the whole dataset |
+| `POST /api/diff_from_mean`, `/api/state_diff_from_mean` | Global mean minus state mean |
+| `POST /api/mean_by_category`, `/api/state_mean_by_category` | Means split by demographic category |
+| `GET /api/get_results/<job_id>` | Job status, or the result when done |
+| `GET /api/jobs`, `/api/num_jobs` | All jobs and their status / jobs still running |
+| `GET /api/graceful_shutdown` | Stop accepting jobs and drain the queue |
+
+## Run it
+
+```bash
+make create_venv
+source venv/bin/activate
+make install
+make run_server      # starts the Flask server
+make run_tests       # runs the checker against the API
+```
+
+Unit tests live in `unittests/TestWebServer.py`.
+
+## What I would improve
+
+- Unit tests for every statistic, not only one.
+- A `concurrent.futures.ThreadPoolExecutor` instead of a hand-written pool in production code (the hand-written pool was the point of the assignment).
+- Load the dataset once into typed columns, to avoid string-to-number surprises.
